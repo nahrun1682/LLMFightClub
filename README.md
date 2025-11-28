@@ -115,6 +115,28 @@ LLMFightClub/
 │           ├── __init__.py
 │           └── group_chat.py       # グループチャット
 │
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py                 # pytest fixtures
+│   │
+│   ├── unit/                       # 単体テスト（モック使用）
+│   │   ├── __init__.py
+│   │   ├── test_agents/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_base.py
+│   │   │   ├── test_gemini.py
+│   │   │   ├── test_grok.py
+│   │   │   ├── test_claude.py
+│   │   │   └── test_gpt.py
+│   │   │
+│   │   └── test_workflows/
+│   │       ├── __init__.py
+│   │       └── test_group_chat.py
+│   │
+│   └── integration/                # 統合テスト（実API使用）
+│       ├── __init__.py
+│       └── test_group_chat_e2e.py
+│
 ├── prompts/                        # プロンプトテンプレート (YAML)
 │   ├── orchestrator.yaml
 │   ├── gemini.yaml
