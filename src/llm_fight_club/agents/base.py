@@ -6,6 +6,8 @@ from typing import Any
 
 from litellm import acompletion
 
+from llm_fight_club.prompts import get_system_prompt
+
 
 @dataclass
 class Message:
@@ -32,14 +34,18 @@ class BaseAgent(ABC):
     emoji: str = ""
     personality: str = ""
     model: str = ""
+    prompt_name: str = ""  # Name of the YAML file (without .yaml)
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key
+        self._system_prompt: str | None = None
 
     @property
-    @abstractmethod
     def system_prompt(self) -> str:
-        pass
+        """Load system prompt from YAML file."""
+        if self._system_prompt is None:
+            self._system_prompt = get_system_prompt(self.prompt_name)
+        return self._system_prompt
 
     def get_extra_params(self) -> dict[str, Any]:
         return {}

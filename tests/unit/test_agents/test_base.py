@@ -11,10 +11,7 @@ class ConcreteAgent(BaseAgent):
     name = "TestAgent"
     emoji = ""
     model = "test/model"
-
-    @property
-    def system_prompt(self) -> str:
-        return "You are a test agent."
+    prompt_name = "gemini"  # Use existing YAML for testing
 
 
 class TestMessage:
@@ -53,9 +50,11 @@ class TestBaseAgent:
         agent = ConcreteAgent()
         assert repr(agent) == " TestAgent"
 
-    def test_system_prompt(self):
+    def test_system_prompt_loads_from_yaml(self):
         agent = ConcreteAgent()
-        assert agent.system_prompt == "You are a test agent."
+        prompt = agent.system_prompt
+        assert "Gemini" in prompt
+        assert len(prompt) > 50
 
     def test_get_extra_params_default(self):
         agent = ConcreteAgent()
@@ -75,7 +74,7 @@ class TestBaseAgent:
 
         assert len(messages) == 2
         assert messages[0]["role"] == "system"
-        assert messages[0]["content"] == "You are a test agent."
+        assert "Gemini" in messages[0]["content"]
         assert messages[1]["role"] == "user"
         assert messages[1]["content"] == "Hello"
 

@@ -13,25 +13,10 @@ class GeminiAgent(BaseAgent):
     emoji = ""
     personality = "serious, evidence-based"
     model = "gemini/gemini-1.5-pro"
+    prompt_name = "gemini"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.google_api_key)
-
-    @property
-    def system_prompt(self) -> str:
-        return """You are "Gemini" participating in a group chat discussion.
-
-## Your personality
-- Serious and evidence-focused
-- Speak based on data and facts
-- Reference official documents and reliable sources
-- Use expressions like "According to..." or "The data shows..."
-
-## Rules
-- Keep responses brief (2-4 sentences)
-- You may react to other participants' opinions
-- You can use Google Search to get the latest information
-- Respond in Japanese"""
 
     def get_extra_params(self) -> dict[str, Any]:
         """Enable Google Search grounding."""
