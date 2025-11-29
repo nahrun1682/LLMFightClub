@@ -24,7 +24,7 @@ class TestGeminiAgent:
     async def test_respond_live(self, skip_if_no_google_key):
         """Test Gemini agent with real API call."""
         agent = GeminiAgent(api_key=config.google_api_key)
-        response = await agent.respond("Say 'Hello' in one word.")
+        response = await agent.respond("どう？今日の調子は？")
 
         print(f"\n[Gemini] Response: {response.content}")
 

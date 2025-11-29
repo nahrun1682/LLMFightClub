@@ -24,7 +24,7 @@ class TestGPTAgent:
     async def test_respond_live(self, skip_if_no_openai_key):
         """Test GPT agent with real API call."""
         agent = GPTAgent(api_key=config.openai_api_key)
-        response = await agent.respond("Say 'Hello' in one word.")
+        response = await agent.respond("どう？今日の調子は？")
 
         print(f"\n[GPT] Response: {response.content}")
 
