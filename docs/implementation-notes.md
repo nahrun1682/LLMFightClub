@@ -1,30 +1,30 @@
-# LLM Fight Club - Implementation Notes
+# LLM Fight Club - 実装メモ
 
-## Overview
+## 概要
 
-Multi-LLM group chat system where GPT, Claude, Gemini, Grok discuss topics with an orchestrator (Azure OpenAI) as facilitator.
+GPT、Claude、Gemini、Grokがトピックについて議論するマルチLLMグループチャットシステム。オーケストレーター（Azure OpenAI）がファシリテーターとして進行を管理する。
 
-## Technology Stack
+## 技術スタック
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| Orchestration | Microsoft Agent Framework (MAF) | Group chat workflow |
-| LLM Interface | LiteLLM | Unified API for all providers |
-| Search | Provider-native | Each model's built-in search |
+| コンポーネント | 技術 | 用途 |
+|---------------|------|------|
+| オーケストレーション | Microsoft Agent Framework (MAF) | グループチャットワークフロー |
+| LLMインターフェース | LiteLLM | 全プロバイダー統一API |
+| 検索 | 各プロバイダー固有 | 各モデルの組み込み検索機能 |
 
-## Architecture
+## アーキテクチャ
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    MagenticBuilder                       │
 ├─────────────────────────────────────────────────────────┤
-│  StandardMagenticManager (Azure OpenAI - Orchestrator)  │
-│    - Creates plans                                       │
-│    - Tracks progress                                     │
-│    - Decides which agent speaks next                     │
-│    - Synthesizes final answer                            │
+│  StandardMagenticManager (Azure OpenAI - オーケストレーター)  │
+│    - 計画を作成                                          │
+│    - 進捗を追跡                                          │
+│    - 次に話すエージェントを決定                            │
+│    - 最終回答をまとめる                                   │
 ├─────────────────────────────────────────────────────────┤
-│  Participants:                                           │
+│  参加者:                                                 │
 │    ├── ChatAgent(Gemini) ─── LiteLLMChatClient          │
 │    ├── ChatAgent(Grok) ──── LiteLLMChatClient           │
 │    ├── ChatAgent(Claude) ── LiteLLMChatClient           │
@@ -32,28 +32,28 @@ Multi-LLM group chat system where GPT, Claude, Gemini, Grok discuss topics with 
 └─────────────────────────────────────────────────────────┘
 ```
 
-## Completed Work
+## 完了した作業
 
-### 1. Project Structure
+### 1. プロジェクト構成
 
 ```
 LLMFightClub/
 ├── src/llm_fight_club/
 │   ├── __init__.py
 │   ├── main.py
-│   ├── config.py          # Environment variable loading
-│   ├── prompts.py         # YAML prompt loader
+│   ├── config.py          # 環境変数の読み込み
+│   ├── prompts.py         # YAMLプロンプトローダー
 │   ├── agents/
 │   │   ├── __init__.py
-│   │   ├── base.py        # BaseAgent with LiteLLM
-│   │   ├── gemini.py      # Google Search enabled
-│   │   ├── grok.py        # X/web/news search enabled
-│   │   ├── claude.py      # Web search enabled
-│   │   ├── gpt.py         # Web search enabled
+│   │   ├── base.py        # LiteLLM使用のBaseAgent
+│   │   ├── gemini.py      # Google検索有効
+│   │   ├── grok.py        # X/web/news検索有効
+│   │   ├── claude.py      # Web検索有効
+│   │   ├── gpt.py         # Web検索有効
 │   │   └── orchestrator.py
 │   └── workflows/
 │       ├── __init__.py
-│       └── group_chat.py  # TODO: MAF implementation
+│       └── group_chat.py  # TODO: MAF実装
 ├── prompts/
 │   ├── gemini.yaml
 │   ├── grok.yaml
@@ -61,7 +61,7 @@ LLMFightClub/
 │   ├── gpt.yaml
 │   └── orchestrator.yaml
 ├── tests/
-│   ├── conftest.py        # pytest fixtures with mocks
+│   ├── conftest.py        # モック付きpytestフィクスチャ
 │   └── unit/
 │       └── test_agents/
 │           ├── test_base.py
@@ -74,29 +74,29 @@ LLMFightClub/
     └── implementation-notes.md
 ```
 
-### 2. Agent Implementation (LiteLLM)
+### 2. エージェント実装 (LiteLLM)
 
-Each agent extends `BaseAgent` and uses LiteLLM for unified API calls.
+各エージェントは`BaseAgent`を継承し、統一APIコールにLiteLLMを使用。
 
-**BaseAgent Features:**
-- Async `respond()` method using `litellm.acompletion()`
-- YAML-based system prompts via `prompts.py`
-- Message history support
-- Provider-specific extra parameters
+**BaseAgentの機能:**
+- `litellm.acompletion()`を使用した非同期`respond()`メソッド
+- `prompts.py`経由のYAMLベースシステムプロンプト
+- メッセージ履歴サポート
+- プロバイダー固有の追加パラメータ
 
-**Search Parameters by Provider:**
+**プロバイダー別検索パラメータ:**
 
-| Agent | Model | Search Config |
-|-------|-------|---------------|
+| エージェント | モデル | 検索設定 |
+|-------------|--------|----------|
 | Gemini | `gemini/gemini-1.5-pro` | `{"tools": [{"googleSearch": {}}]}` |
 | Grok | `xai/grok-beta` | `{"search_parameters": {"mode": "on", "sources": ["x", "web", "news"]}}` |
 | Claude | `anthropic/claude-sonnet-4-20250514` | `{"tools": [{"type": "web_search_20250305"}]}` |
 | GPT | `openai/gpt-4o` | `{"tools": [{"type": "web_search_preview"}]}` |
-| Orchestrator | `azure/gpt-4o` | None (coordination only) |
+| Orchestrator | `azure/gpt-4o` | なし（調整のみ） |
 
-### 3. Environment Variables
+### 3. 環境変数
 
-Required in `.env`:
+`.env`に必要:
 
 ```
 AZURE_OPENAI_API_KEY=
@@ -107,74 +107,74 @@ ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
 ```
 
-### 4. Unit Tests
+### 4. ユニットテスト
 
-29 tests passing with mocked LiteLLM responses.
+モック化されたLiteLLMレスポンスで29テスト通過。
 
 ```bash
 uv run python -m pytest tests/ -v
 ```
 
-Tests cover:
-- Message/AgentResponse dataclasses
-- Agent initialization
-- System prompt loading from YAML
-- Extra parameters (search configs)
-- API key handling
-- Message building with history
-- Async respond method
+テスト対象:
+- Message/AgentResponseデータクラス
+- エージェント初期化
+- YAMLからのシステムプロンプト読み込み
+- 追加パラメータ（検索設定）
+- APIキー処理
+- 履歴付きメッセージ構築
+- 非同期respondメソッド
 
-## Pending Work
+## 未完了の作業
 
-### Phase 1: Connection Testing
-- Create `scripts/test_connections.py`
-- Verify each agent connects with real API keys
-- Test search functionality
+### Phase 1: 接続テスト
+- `scripts/test_connections.py`を作成
+- 実際のAPIキーで各エージェントの接続を確認
+- 検索機能をテスト
 
 ### Phase 2: LiteLLMChatClient
-- Implement MAF `ChatClientProtocol` wrapper for LiteLLM
-- Handle message format conversion (MAF <-> LiteLLM)
+- LiteLLM用のMAF `ChatClientProtocol`ラッパーを実装
+- メッセージフォーマット変換を処理（MAF <-> LiteLLM）
 
-### Phase 3: MagenticBuilder Integration
-- Wire up `StandardMagenticManager` with Azure OpenAI
-- Add all 4 agents as participants
-- Implement `group_chat.py` workflow
+### Phase 3: MagenticBuilder統合
+- Azure OpenAIで`StandardMagenticManager`を設定
+- 4つのエージェントを参加者として追加
+- `group_chat.py`ワークフローを実装
 
-### Phase 4: Integration Testing
-- Run actual multi-LLM discussions
-- Verify orchestration logic
+### Phase 4: 統合テスト
+- 実際のマルチLLM議論を実行
+- オーケストレーションロジックを検証
 
-## MAF Research Notes
+## MAF調査メモ
 
-### Available Patterns
+### 利用可能なパターン
 
-| Pattern | Description |
-|---------|-------------|
-| `MagenticBuilder` | Manager-worker orchestration |
-| `SequentialBuilder` | Fixed order execution |
-| `ConcurrentBuilder` | Parallel execution |
+| パターン | 説明 |
+|---------|------|
+| `MagenticBuilder` | マネージャー・ワーカー型オーケストレーション |
+| `SequentialBuilder` | 固定順序実行 |
+| `ConcurrentBuilder` | 並列実行 |
 
-### Key MAF Components
+### MAFの主要コンポーネント
 
-- `ChatAgent` - Wraps ChatClient with instructions
-- `ChatClientProtocol` - Interface for LLM providers
-- `StandardMagenticManager` - Orchestrator logic
-- `MagenticBuilder` - Workflow builder
+- `ChatAgent` - ChatClientをインストラクション付きでラップ
+- `ChatClientProtocol` - LLMプロバイダー用インターフェース
+- `StandardMagenticManager` - オーケストレーターロジック
+- `MagenticBuilder` - ワークフロービルダー
 
-### Why MagenticBuilder?
+### なぜMagenticBuilder？
 
-GroupChatBuilder is not yet available in the installed package. MagenticBuilder implements Magentic-One pattern which provides:
-- Automatic planning
-- Progress tracking
-- Dynamic agent selection
-- Final answer synthesis
+GroupChatBuilderはインストール済みパッケージではまだ利用不可。MagenticBuilderはMagentic-Oneパターンを実装しており、以下を提供:
+- 自動計画
+- 進捗追跡
+- 動的エージェント選択
+- 最終回答の統合
 
-This is essentially a sophisticated group chat with an intelligent orchestrator.
+これは本質的に、インテリジェントなオーケストレーターを持つ高度なグループチャット。
 
-## Design Decisions
+## 設計上の決定
 
-1. **LiteLLM over LangChain**: Simpler, focused on LLM calls only, works well with MAF
-2. **YAML prompts**: Separation of concerns, easy to modify personalities
-3. **Provider-native search**: Each model uses its own search capability for best results
-4. **src layout**: Python best practice for package structure
-5. **MAF MagenticBuilder**: Official framework, no custom group chat implementation
+1. **LangChainよりLiteLLM**: シンプル、LLMコールのみに特化、MAFとの相性が良い
+2. **YAMLプロンプト**: 関心の分離、パーソナリティの変更が容易
+3. **プロバイダー固有検索**: 各モデルが自身の検索機能を使用し最良の結果を得る
+4. **srcレイアウト**: Pythonパッケージ構成のベストプラクティス
+5. **MAF MagenticBuilder**: 公式フレームワーク、カスタムグループチャット実装なし
