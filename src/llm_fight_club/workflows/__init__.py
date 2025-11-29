@@ -1,4 +1,11 @@
-"""LLM Fight Club workflows.
+"""LLM Fight Club workflows."""
 
-TODO: Export MAF-based GroupChat workflow
-"""
+from llm_fight_club.workflows.group_chat import (
+    FightClubGroupChat,
+    run_fight_club,
+)
+
+__all__ = [
+    "FightClubGroupChat",
+    "run_fight_club",
+]
