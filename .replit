@@ -1,0 +1,29 @@
+modules = ["python-3.12"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "llm-fight-club-interactive"
+
+[[workflows.workflow]]
+name = "llm-fight-club-interactive"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/work && uv run python -m llm_fight_club.main \"Pythonとのプログラミングの未来は？\" --rounds 5 2>&1 | tee /tmp/llm_output.log"
+
+[workflows.workflow.metadata]
+outputType = "console"
