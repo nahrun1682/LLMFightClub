@@ -12,14 +12,12 @@ class GeminiAgent(BaseAgent):
     name = "Gemini"
     emoji = ""
     personality = "serious, evidence-based"
-    model = "gemini/gemini-1.5-pro"
+    model = "gemini/gemini-2.0-flash"
     prompt_name = "gemini"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.google_api_key)
 
     def get_extra_params(self) -> dict[str, Any]:
-        """Enable Google Search grounding."""
-        return {
-            "tools": [{"googleSearch": {}}],
-        }
+        """Extra parameters for Gemini."""
+        return {}
