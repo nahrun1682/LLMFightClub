@@ -19,6 +19,36 @@ from llm_fight_club.agents import (
 from llm_fight_club.prompts import get_system_prompt
 
 
+def create_fight_club_workflow():
+    """Create a Fight Club workflow for DevUI registration.
+    
+    Returns:
+        A MagenticBuilder workflow that can be registered with DevUI.
+    """
+    orchestrator_client = create_orchestrator_client()
+    agents = create_all_agents()
+    participants = {agent.name: agent for agent in agents}
+    orchestrator_instructions = get_system_prompt("orchestrator")
+    
+    workflow = (
+        MagenticBuilder()
+        .with_standard_manager(
+            chat_client=orchestrator_client,
+            instructions=orchestrator_instructions,
+            max_round_count=10,
+            max_stall_count=5,
+        )
+        .participants(**participants)
+        .on_event(
+            lambda event: print(f"[Event] {type(event).__name__}"),
+            mode=MagenticCallbackMode.NON_STREAMING,
+        )
+        .build()
+    )
+    
+    return workflow
+
+
 class FightClubGroupChat:
     """Multi-LLM group chat orchestrated by MAF."""
 
