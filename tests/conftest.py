@@ -1,25 +1,44 @@
 """Pytest configuration and fixtures."""
 
-from unittest.mock import AsyncMock, MagicMock
-
 import pytest
 
-
-@pytest.fixture
-def mock_litellm_response():
-    """Create a mock LiteLLM response."""
-    response = MagicMock()
-    response.choices = [MagicMock()]
-    response.choices[0].message.content = "This is a mock response."
-    return response
+from llm_fight_club.config import config
 
 
 @pytest.fixture
-def mock_acompletion(mocker, mock_litellm_response):
-    """Mock litellm.acompletion for testing."""
-    mock = mocker.patch(
-        "llm_fight_club.agents.base.acompletion",
-        new_callable=AsyncMock,
-        return_value=mock_litellm_response,
-    )
-    return mock
+def api_keys():
+    """Provide API keys from config for live testing."""
+    return {
+        "openai": config.openai_api_key,
+        "anthropic": config.anthropic_api_key,
+        "google": config.google_api_key,
+        "xai": config.xai_api_key,
+    }
+
+
+@pytest.fixture
+def skip_if_no_openai_key():
+    """Skip test if OpenAI API key is not set."""
+    if not config.openai_api_key:
+        pytest.skip("OPENAI_API_KEY not set")
+
+
+@pytest.fixture
+def skip_if_no_anthropic_key():
+    """Skip test if Anthropic API key is not set."""
+    if not config.anthropic_api_key:
+        pytest.skip("ANTHROPIC_API_KEY not set")
+
+
+@pytest.fixture
+def skip_if_no_google_key():
+    """Skip test if Google API key is not set."""
+    if not config.google_api_key:
+        pytest.skip("GOOGLE_API_KEY not set")
+
+
+@pytest.fixture
+def skip_if_no_xai_key():
+    """Skip test if xAI API key is not set."""
+    if not config.xai_api_key:
+        pytest.skip("XAI_API_KEY not set")

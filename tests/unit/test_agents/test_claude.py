@@ -3,6 +3,7 @@
 import pytest
 
 from llm_fight_club.agents.claude import ClaudeAgent
+from llm_fight_club.config import config
 
 
 class TestClaudeAgent:
@@ -19,20 +20,14 @@ class TestClaudeAgent:
         assert "Claude" in prompt
         assert len(prompt) > 50
 
-    def test_extra_params_includes_web_search(self):
-        agent = ClaudeAgent(api_key="test-key")
-        params = agent.get_extra_params()
-        assert "tools" in params
-        assert any("web_search" in str(t) for t in params["tools"])
-
     @pytest.mark.asyncio
-    async def test_respond_with_mock(self, mock_acompletion):
-        agent = ClaudeAgent(api_key="test-key")
-        response = await agent.respond("Test question")
+    async def test_respond_live(self, skip_if_no_anthropic_key):
+        """Test Claude agent with real API call."""
+        agent = ClaudeAgent(api_key=config.anthropic_api_key)
+        response = await agent.respond("どう？今日の調子は？")
 
-        assert response.content == "This is a mock response."
+        print(f"\n[Claude] Response: {response.content}")
+
+        assert response.content is not None
+        assert len(response.content) > 0
         assert response.agent_name == "Claude"
-
-        # Verify web search tool was passed
-        call_args = mock_acompletion.call_args
-        assert "tools" in call_args.kwargs

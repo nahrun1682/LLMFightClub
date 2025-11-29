@@ -12,17 +12,12 @@ class GrokAgent(BaseAgent):
     name = "Grok"
     emoji = ""
     personality = "provocative, edgy"
-    model = "xai/grok-beta"
+    model = "xai/grok-2-latest"
     prompt_name = "grok"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.xai_api_key)
 
     def get_extra_params(self) -> dict[str, Any]:
-        """Enable X/Web live search."""
-        return {
-            "search_parameters": {
-                "mode": "on",
-                "sources": ["x", "web", "news"],
-            },
-        }
+        """Extra parameters for Grok."""
+        return {}
