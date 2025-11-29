@@ -62,9 +62,9 @@ Each agent has a distinct personality and search capability, creating diverse pe
 ### LLM Providers
 
 - **OpenAI (GPT-4o, GPT-4o-mini)**: Primary orchestrator model and discussion participant
-- **Anthropic (Claude Sonnet 4)**: Discussion participant with web search capability
-- **Google (Gemini 1.5 Pro)**: Discussion participant with Google Search grounding
-- **xAI (Grok Beta)**: Discussion participant with X/Twitter and web search
+- **Anthropic (Claude 3.5 Haiku)**: Discussion participant
+- **Google (Gemini 2.0 Flash)**: Discussion participant
+- **xAI (Grok 2)**: Discussion participant
 
 ### Libraries & Frameworks
 
@@ -76,13 +76,20 @@ Each agent has a distinct personality and search capability, creating diverse pe
 
 ### Search & Tool Integrations
 
-- **Google Search**: Integrated via Gemini's native grounding tools
-- **Web Search**: Available through Claude and GPT's tool APIs
-- **X/Twitter Search**: Available through Grok's live search parameters
-- **News Search**: Available through Grok's search sources
+> **Note**: Web search features are temporarily disabled due to LiteLLM compatibility issues. Basic chat functionality works without search.
 
 ### Development Tools
 
 - **pytest-asyncio**: Async test support
-- **pytest-mock**: Mock fixtures for testing LLM calls
 - **Black/Ruff**: Code formatting and linting (implicit from Python project structure)
+
+## Recent Changes (November 2025)
+
+- Migrated orchestrator from Azure OpenAI to regular OpenAI (GPT-4o-mini)
+- Updated model names to LiteLLM-compatible versions:
+  - Claude: `anthropic/claude-3-5-haiku-20241022`
+  - Gemini: `gemini/gemini-2.0-flash`
+  - Grok: `xai/grok-2-latest`
+  - GPT: `openai/gpt-4o`
+- Converted unit tests from mock-based to live API tests
+- Temporarily disabled web search parameters (LiteLLM compatibility issue)
