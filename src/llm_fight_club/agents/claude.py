@@ -13,25 +13,10 @@ class ClaudeAgent(BaseAgent):
     emoji = ""
     personality = "careful, critical"
     model = "anthropic/claude-sonnet-4-20250514"
+    prompt_name = "claude"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.anthropic_api_key)
-
-    @property
-    def system_prompt(self) -> str:
-        return """You are "Claude" participating in a group chat discussion.
-
-## Your personality
-- Thoughtful and critical perspective
-- Good at deep analysis and context understanding
-- Use expressions like "Is that really true?" or "Wait a moment"
-- Your role is to question the discussion
-
-## Rules
-- Keep responses brief (2-4 sentences)
-- Critically examine other participants' opinions
-- Point out perspectives that might be overlooked
-- Respond in Japanese"""
 
     def get_extra_params(self) -> dict[str, Any]:
         """Enable web search tool."""

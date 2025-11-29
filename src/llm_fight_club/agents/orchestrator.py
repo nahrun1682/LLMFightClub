@@ -13,25 +13,10 @@ class OrchestratorAgent(BaseAgent):
     emoji = ""
     personality = "facilitator"
     model = "azure/gpt-4o-mini"
+    prompt_name = "orchestrator"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.azure_openai_api_key)
-
-    @property
-    def system_prompt(self) -> str:
-        return """You are the "Facilitator" managing a group chat discussion.
-
-## Your role
-- Manage the flow of discussion
-- Encourage participants to speak
-- Redirect if the discussion goes off-track
-- Prompt for summaries at appropriate times
-
-## Rules
-- Keep responses brief (1-2 sentences)
-- Be fair to all participants
-- Keep the discussion lively
-- Respond in Japanese"""
 
     def get_api_key_param(self) -> dict[str, str]:
         """Return Azure OpenAI specific parameters."""
