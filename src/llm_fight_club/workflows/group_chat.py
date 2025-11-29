@@ -9,8 +9,8 @@ from agent_framework import (
     MagenticBuilder,
     MagenticAgentMessageEvent,
     MagenticOrchestratorMessageEvent,
+    MagenticFinalResultEvent,
 )
-from litellm import close_litellm_async_clients
 
 from llm_fight_club.agents import (
     create_all_agents,
@@ -82,27 +82,11 @@ class FightClubGroupChat:
 
         orchestrator_instructions = get_system_prompt("orchestrator")
 
-        def event_handler(event: Any) -> None:
-            """Handle workflow events."""
-            if isinstance(event, MagenticAgentMessageEvent):
-                agent_name = event.agent_name
-                content = event.message.text if event.message else ""
-                self._messages.append({
-                    "agent": agent_name,
-                    "content": content,
-                })
-                if self.on_message:
-                    self.on_message(agent_name, content)
-
-            elif isinstance(event, MagenticOrchestratorMessageEvent):
-                content = event.message.text if event.message else ""
-                self._messages.append({
-                    "agent": "Orchestrator",
-                    "content": content,
-                })
-                if self.on_message:
-                    self.on_message("Orchestrator", content)
-
+        task_message = ChatMessage(
+            role="user",
+            text=f"トピック: {topic}\n\n参加者全員でこのトピックについて議論してください。",
+        )
+        
         workflow = (
             MagenticBuilder()
             .with_standard_manager(
@@ -112,21 +96,40 @@ class FightClubGroupChat:
                 max_stall_count=3,
             )
             .participants(**participants)
-            .on_event(event_handler, mode=MagenticCallbackMode.NON_STREAMING)
-            .start_with(f"トピック: {topic}\n\n参加者全員でこのトピックについて議論してください。")
+            .start_with_message(task_message)
         )
 
-        try:
-            result = await workflow.run()
+        final_result = ""
+        
+        async for event in workflow.run_stream():
+            if isinstance(event, MagenticAgentMessageEvent):
+                agent_id = getattr(event, 'agent_id', 'Agent')
+                msg = event.message
+                content = msg.text if msg else ""
+                self._messages.append({
+                    "agent": agent_id,
+                    "content": content,
+                })
+                if self.on_message and content:
+                    self.on_message(agent_id, content)
 
-            outputs = result.get_outputs()
-            if outputs and isinstance(outputs[0], ChatMessage):
-                return outputs[0].text or ""
-            elif outputs:
-                return str(outputs[0])
-            return "議論が終了しました。"
-        finally:
-            await close_litellm_async_clients()
+            elif isinstance(event, MagenticOrchestratorMessageEvent):
+                msg = event.message
+                content = msg.text if msg else ""
+                if content:
+                    self._messages.append({
+                        "agent": "Orchestrator",
+                        "content": content,
+                    })
+                    if self.on_message:
+                        self.on_message("Orchestrator", content)
+            
+            elif isinstance(event, MagenticFinalResultEvent):
+                msg = event.message
+                if msg:
+                    final_result = msg.text or ""
+
+        return final_result or "議論が終了しました。"
 
     @property
     def conversation_history(self) -> list[dict[str, Any]]:
