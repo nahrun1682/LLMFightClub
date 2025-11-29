@@ -15,15 +15,24 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "llm-fight-club-interactive"
+args = "llm-fight-club"
 
 [[workflows.workflow]]
-name = "llm-fight-club-interactive"
+name = "llm-fight-club"
 author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace && uv sync && uv run python -m llm_fight_club.main \"Pythonとのプログラミングの未来は？\" --rounds 5"
+args = "cd /home/runner/workspace && uv run python -m llm_fight_club.devui_server"
+waitForPort = 5000
 
-[workflows.workflow.metadata]
-outputType = "console"
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 43103
+externalPort = 3000
