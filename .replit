@@ -23,7 +23,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/work && uv run python -m llm_fight_club.main \"Pythonとのプログラミングの未来は？\" --rounds 5 2>&1 | tee /tmp/llm_output.log"
+args = "cd /home/runner/workspace && uv sync && uv run python -m llm_fight_club.main \"Pythonとのプログラミングの未来は？\" --rounds 5"
 
 [workflows.workflow.metadata]
 outputType = "console"
