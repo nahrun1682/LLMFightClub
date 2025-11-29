@@ -24,7 +24,7 @@ class TestGrokAgent:
     async def test_respond_live(self, skip_if_no_xai_key):
         """Test Grok agent with real API call."""
         agent = GrokAgent(api_key=config.xai_api_key)
-        response = await agent.respond("Say 'Hello' in one word.")
+        response = await agent.respond("どう？今日の調子は？")
 
         print(f"\n[Grok] Response: {response.content}")
 

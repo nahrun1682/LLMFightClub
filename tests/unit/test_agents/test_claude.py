@@ -24,7 +24,7 @@ class TestClaudeAgent:
     async def test_respond_live(self, skip_if_no_anthropic_key):
         """Test Claude agent with real API call."""
         agent = ClaudeAgent(api_key=config.anthropic_api_key)
-        response = await agent.respond("Say 'Hello' in one word.")
+        response = await agent.respond("どう？今日の調子は？")
 
         print(f"\n[Claude] Response: {response.content}")
 
