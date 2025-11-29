@@ -26,6 +26,8 @@ class TestGPTAgent:
         agent = GPTAgent(api_key=config.openai_api_key)
         response = await agent.respond("Say 'Hello' in one word.")
 
+        print(f"\n[GPT] Response: {response.content}")
+
         assert response.content is not None
         assert len(response.content) > 0
         assert response.agent_name == "GPT"

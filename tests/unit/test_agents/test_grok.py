@@ -26,6 +26,8 @@ class TestGrokAgent:
         agent = GrokAgent(api_key=config.xai_api_key)
         response = await agent.respond("Say 'Hello' in one word.")
 
+        print(f"\n[Grok] Response: {response.content}")
+
         assert response.content is not None
         assert len(response.content) > 0
         assert response.agent_name == "Grok"
