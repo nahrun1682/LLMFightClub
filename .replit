@@ -15,15 +15,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "llm-fight-club-interactive"
+args = "llm-fight-club"
 
 [[workflows.workflow]]
-name = "llm-fight-club-interactive"
+name = "llm-fight-club"
 author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd /home/runner/workspace && uv sync && uv run python -m llm_fight_club.main \"Pythonとのプログラミングの未来は？\" --rounds 5"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && uv run python -m llm_fight_club.main \"AIの未来\" --rounds 5"
