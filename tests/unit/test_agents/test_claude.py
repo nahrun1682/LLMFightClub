@@ -26,6 +26,8 @@ class TestClaudeAgent:
         agent = ClaudeAgent(api_key=config.anthropic_api_key)
         response = await agent.respond("Say 'Hello' in one word.")
 
+        print(f"\n[Claude] Response: {response.content}")
+
         assert response.content is not None
         assert len(response.content) > 0
         assert response.agent_name == "Claude"
