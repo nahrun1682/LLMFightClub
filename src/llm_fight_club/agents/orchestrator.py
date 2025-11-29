@@ -12,19 +12,17 @@ class OrchestratorAgent(BaseAgent):
     name = "Facilitator"
     emoji = ""
     personality = "facilitator"
-    model = "azure/gpt-4o-mini"
+    model = "openai/gpt-4o-mini"
     prompt_name = "orchestrator"
 
     def __init__(self, api_key: str | None = None):
-        super().__init__(api_key or config.azure_openai_api_key)
+        super().__init__(api_key or config.openai_api_key)
 
     def get_api_key_param(self) -> dict[str, str]:
-        """Return Azure OpenAI specific parameters."""
+        """Return OpenAI specific parameters."""
         params = {}
         if self.api_key:
             params["api_key"] = self.api_key
-        if config.azure_openai_endpoint:
-            params["api_base"] = config.azure_openai_endpoint
         return params
 
     def get_extra_params(self) -> dict[str, Any]:
