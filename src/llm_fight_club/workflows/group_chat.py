@@ -9,7 +9,6 @@ from agent_framework import (
     MagenticBuilder,
     MagenticAgentMessageEvent,
     MagenticOrchestratorMessageEvent,
-    MagenticCallbackMode,
 )
 from litellm import close_litellm_async_clients
 
@@ -43,10 +42,6 @@ def create_fight_club_workflow():
         )
         .participants(**participants)
         .with_checkpointing(checkpoint_storage)
-        .on_event(
-            lambda event: print(f"[Event] {type(event).__name__}"),
-            mode=MagenticCallbackMode.NON_STREAMING,
-        )
         .build()
     )
     
