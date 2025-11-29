@@ -22,8 +22,13 @@ name = "llm-fight-club"
 author = "agent"
 
 [workflows.workflow.metadata]
-outputType = "console"
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace && uv run python -m llm_fight_club.main \"AIの未来\" --rounds 5"
+args = "cd /home/runner/workspace && uv run python -m llm_fight_club.devui_server"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
