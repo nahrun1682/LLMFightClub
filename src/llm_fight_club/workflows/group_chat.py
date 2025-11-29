@@ -5,6 +5,7 @@ from typing import Any
 
 from agent_framework import (
     ChatMessage,
+    InMemoryCheckpointStorage,
     MagenticBuilder,
     MagenticAgentMessageEvent,
     MagenticOrchestratorMessageEvent,
@@ -30,6 +31,8 @@ def create_fight_club_workflow():
     participants = {agent.name: agent for agent in agents}
     orchestrator_instructions = get_system_prompt("orchestrator")
     
+    checkpoint_storage = InMemoryCheckpointStorage()
+    
     workflow = (
         MagenticBuilder()
         .with_standard_manager(
@@ -39,6 +42,7 @@ def create_fight_club_workflow():
             max_stall_count=5,
         )
         .participants(**participants)
+        .with_checkpointing(checkpoint_storage)
         .on_event(
             lambda event: print(f"[Event] {type(event).__name__}"),
             mode=MagenticCallbackMode.NON_STREAMING,
