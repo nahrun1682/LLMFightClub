@@ -133,7 +133,22 @@ prompts/
 
 ## Usage
 
+### DevUI (Browser Interface) - Recommended
+
 ```bash
-# Run a discussion
+# Start the DevUI server
+uv run python -m llm_fight_club.devui_server
+```
+
+Opens a browser-based chat interface at `http://localhost:5000` where you can:
+- Select any of the 4 agents (GPT, Claude, Gemini, Grok) from the dropdown
+- Send messages and get real-time responses
+- View events, traces, and tool calls in the debug panel
+- Manage conversation history
+
+### CLI Mode
+
+```bash
+# Run a group discussion
 uv run python -m llm_fight_club.main "Your topic here" --rounds 5
 ```
