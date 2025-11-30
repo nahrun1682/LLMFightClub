@@ -1,5 +1,21 @@
 # LLM Fight Club - 実装メモ
 
+## 更新履歴
+
+| No. | 日付 | 内容 | ステータス |
+|-----|------|------|-----------|
+| 001 | 2025-11-29 | プロジェクト構成・エージェント実装 | 完了 |
+| 002 | 2025-11-29 | YAMLプロンプト管理に移行 | 完了 |
+| 003 | 2025-11-29 | ユニットテスト追加（29件通過） | 完了 |
+| 004 | 2025-11-29 | MAF調査（MagenticBuilder採用決定） | 完了 |
+| 005 | 2025-11-29 | ドキュメント作成・日本語化 | 完了 |
+| 006 | 2025-11-29 | 接続テストスクリプト作成 | 完了 |
+| 007 | - | ローカル環境で接続テスト実行 | 待機中 |
+| 008 | - | LiteLLMChatClient実装 | 未着手 |
+| 009 | - | MagenticBuilder統合 | 未着手 |
+
+---
+
 ## 概要
 
 GPT、Claude、Gemini、Grokがトピックについて議論するマルチLLMグループチャットシステム。オーケストレーター（OpenAI gpt-4o-mini）がファシリテーターとして進行を管理する。
@@ -32,9 +48,11 @@ GPT、Claude、Gemini、Grokがトピックについて議論するマルチLLM�
 └─────────────────────────────────────────────────────────┘
 ```
 
+---
+
 ## 完了した作業
 
-### 1. プロジェクト構成
+### 001: プロジェクト構成
 
 ```
 LLMFightClub/
@@ -61,20 +79,15 @@ LLMFightClub/
 │   ├── gpt.yaml
 │   └── orchestrator.yaml
 ├── tests/
-│   ├── conftest.py        # モック付きpytestフィクスチャ
-│   └── unit/
-│       └── test_agents/
-│           ├── test_base.py
-│           ├── test_gemini.py
-│           ├── test_grok.py
-│           ├── test_claude.py
-│           ├── test_gpt.py
-│           └── test_orchestrator.py
+│   ├── conftest.py
+│   └── unit/test_agents/
+├── scripts/
+│   └── test_openai.py     # 接続テスト
 └── docs/
     └── implementation-notes.md
 ```
 
-### 2. エージェント実装 (LiteLLM)
+### 002: エージェント実装 (LiteLLM)
 
 各エージェントは`BaseAgent`を継承し、統一APIコールにLiteLLMを使用。
 
@@ -94,7 +107,7 @@ LLMFightClub/
 | GPT | `openai/gpt-4o` | `{"tools": [{"type": "web_search_preview"}]}` |
 | Orchestrator | `openai/gpt-4o-mini` | なし（調整のみ） |
 
-### 3. 環境変数
+### 003: 環境変数
 
 `.env`に必要:
 
@@ -105,7 +118,7 @@ ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
 ```
 
-### 4. ユニットテスト
+### 004: ユニットテスト
 
 モック化されたLiteLLMレスポンスで29テスト通過。
 
@@ -122,25 +135,41 @@ uv run python -m pytest tests/ -v
 - 履歴付きメッセージ構築
 - 非同期respondメソッド
 
+### 005: 接続テストスクリプト
+
+```bash
+# ローカル環境で実行
+uv run python scripts/test_openai.py
+```
+
+期待される出力:
+```
+Testing OpenAI connection...
+API Key: sk-proj-xxxxx...xxxx
+
+Success! Response:
+こんにちは！
+```
+
+---
+
 ## 未完了の作業
 
-### Phase 1: 接続テスト
-- `scripts/test_connections.py`を作成
-- 実際のAPIキーで各エージェントの接続を確認
-- 検索機能をテスト
+### 007: ローカル接続テスト（待機中）
+- `.env`にAPIキーを設定
+- `scripts/test_openai.py`を実行して接続確認
+- 各プロバイダーのテストスクリプトを追加予定
 
-### Phase 2: LiteLLMChatClient
+### 008: LiteLLMChatClient
 - LiteLLM用のMAF `ChatClientProtocol`ラッパーを実装
 - メッセージフォーマット変換を処理（MAF <-> LiteLLM）
 
-### Phase 3: MagenticBuilder統合
+### 009: MagenticBuilder統合
 - OpenAIで`StandardMagenticManager`を設定
 - 4つのエージェントを参加者として追加
 - `group_chat.py`ワークフローを実装
 
-### Phase 4: 統合テスト
-- 実際のマルチLLM議論を実行
-- オーケストレーションロジックを検証
+---
 
 ## MAF調査メモ
 
@@ -168,6 +197,8 @@ GroupChatBuilderはインストール済みパッケージではまだ利用不�
 - 最終回答の統合
 
 これは本質的に、インテリジェントなオーケストレーターを持つ高度なグループチャット。
+
+---
 
 ## 設計上の決定
 
