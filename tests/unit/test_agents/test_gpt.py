@@ -3,6 +3,7 @@
 import pytest
 
 from llm_fight_club.agents.gpt import GPTAgent
+from llm_fight_club.config import config
 
 
 class TestGPTAgent:
@@ -19,20 +20,14 @@ class TestGPTAgent:
         assert "GPT" in prompt
         assert len(prompt) > 50
 
-    def test_extra_params_includes_web_search(self):
-        agent = GPTAgent(api_key="test-key")
-        params = agent.get_extra_params()
-        assert "tools" in params
-        assert any("web_search" in str(t) for t in params["tools"])
-
     @pytest.mark.asyncio
-    async def test_respond_with_mock(self, mock_acompletion):
-        agent = GPTAgent(api_key="test-key")
-        response = await agent.respond("Test question")
+    async def test_respond_live(self, skip_if_no_openai_key):
+        """Test GPT agent with real API call."""
+        agent = GPTAgent(api_key=config.openai_api_key)
+        response = await agent.respond("どう？今日の調子は？")
 
-        assert response.content == "This is a mock response."
+        print(f"\n[GPT] Response: {response.content}")
+
+        assert response.content is not None
+        assert len(response.content) > 0
         assert response.agent_name == "GPT"
-
-        # Verify web search tool was passed
-        call_args = mock_acompletion.call_args
-        assert "tools" in call_args.kwargs

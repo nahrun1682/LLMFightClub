@@ -19,7 +19,5 @@ class GPTAgent(BaseAgent):
         super().__init__(api_key or config.openai_api_key)
 
     def get_extra_params(self) -> dict[str, Any]:
-        """Enable web search tool."""
-        return {
-            "tools": [{"type": "web_search_preview"}],
-        }
+        """Extra parameters for GPT."""
+        return {}

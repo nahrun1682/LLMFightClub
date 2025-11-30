@@ -12,14 +12,12 @@ class ClaudeAgent(BaseAgent):
     name = "Claude"
     emoji = ""
     personality = "careful, critical"
-    model = "anthropic/claude-sonnet-4-20250514"
+    model = "anthropic/claude-3-5-haiku-20241022"
     prompt_name = "claude"
 
     def __init__(self, api_key: str | None = None):
         super().__init__(api_key or config.anthropic_api_key)
 
     def get_extra_params(self) -> dict[str, Any]:
-        """Enable web search tool."""
-        return {
-            "tools": [{"type": "web_search_20250305"}],
-        }
+        """Extra parameters for Claude."""
+        return {}
